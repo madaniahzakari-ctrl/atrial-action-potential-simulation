@@ -11,7 +11,7 @@ Iup_max, Ca_up_max = 0.005, 15.0
 V_cell = 20100.0
 Vi, Vup, Vrel = V_cell * 0.68, 0.0552 * V_cell, 0.0048 * V_cell
 
-def run_crn_plot(gKur_scale=1.0, bcl=1000.0, n_beats=3, dt=0.02):
+def run_crn_plot(gKur_scale=1.0, bcl=1000.0, n_beats=50, dt=0.005):
     steps_per_beat = int(round(bcl / dt))
     n_steps = n_beats * steps_per_beat
     last_beat_step = (n_beats - 1) * steps_per_beat
@@ -155,6 +155,7 @@ plt.show()
 
 # FIGURE 3
 plt.figure(figsize=(9, 4.8), dpi=300)
+plt.plot(t_p, V_ctrl, color='gray', linestyle='--', alpha=0.6, linewidth=1.8, label='Control Reference (0% Block)')
 plt.plot(t_p, V_50, color='darkorange', linestyle='--', linewidth=2.2, label='Moderate Blockade (50% Block / IC50)')
 plt.plot(t_p, V_75, color='crimson', linestyle=':', linewidth=2.2, label='Severe Blockade (75% Block)')
 plt.plot(t_p, V_100, color='darkred', linewidth=2.5, label='Complete Knockout (100% Block)')
@@ -166,7 +167,33 @@ plt.grid(True, linestyle=':', alpha=0.5)
 plt.legend(loc='upper right')
 plt.savefig('Figure_3_Atrial_Severe_Block.png', bbox_inches='tight')
 plt.show()
+# COMPUTE METRICS & HIGH-FREQUENCY ALTERNANS (2.5 Hz)
+def print_metrics(label, t, V):
+    v_rest = round(float(np.mean(V[:int(15.0/0.005)])), 1)
+    idx_p = int(np.argmax(V))
+    apa = round(float(V[idx_p] - v_rest), 1)
+    v50, v90 = V[idx_p] - 0.5*apa, V[idx_p] - 0.9*apa
+    apd50 = round(float(t[idx_p:][np.where(V[idx_p:] <= v50)].item(0) - t[idx_p]), 1)
+    apd90 = round(float(t[idx_p:][np.where(V[idx_p:] <= v90)].item(0) - t[idx_p]), 1)
+    print(f"{label}: Vm={v_rest} mV, APA={apa} mV, APD50={apd50} ms, APD90={apd90} ms")
 
+for lbl, v_arr in [("Control", V_ctrl), ("Mild 25%", V_25), ("Moderate 50%", V_50), ("Severe 75%", V_75), ("Knockout 100%", V_100)]:
+    print_metrics(lbl, t_p, v_arr)
+
+t_hf, V_hf50 = run_crn_plot(0.50, bcl=400.0, n_beats=50, dt=0.005)
+_, V_hf75 = run_crn_plot(0.25, bcl=400.0, n_beats=50, dt=0.005)
+
+plt.figure(figsize=(9, 4.8), dpi=300)
+plt.plot(t_hf, V_hf50, color='darkorange', linestyle='--', linewidth=2.2, label='Moderate Blockade (50% Block) at 2.5 Hz')
+plt.plot(t_hf, V_hf75, color='crimson', linewidth=2.5, label='Severe Blockade (75% Block) at 2.5 Hz')
+plt.title('Figure 4: High-Frequency Pacing (2.5 Hz) Repolarization Instability and Rate Stress', fontsize=10.5, fontweight='bold')
+plt.xlabel('Time (ms)')
+plt.ylabel('Membrane Potential (mV)')
+plt.ylim(-90, 35)
+plt.grid(True, linestyle=':', alpha=0.5)
+plt.legend(loc='upper right')
+plt.savefig('Figure_4_Atrial_Rate_Stress.png', bbox_inches='tight')
+plt.show()
 
         
         
