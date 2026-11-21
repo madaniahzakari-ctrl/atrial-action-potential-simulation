@@ -160,7 +160,7 @@ plt.plot(t_p, V_ctrl, color='gray', linestyle='--', alpha=0.6, linewidth=1.8, la
 plt.plot(t_p, V_50, color='darkorange', linestyle='--', linewidth=2.2, label='Moderate Blockade (50% Block / IC50)')
 plt.plot(t_p, V_75, color='crimson', linestyle=':', linewidth=2.2, label='Severe Blockade (75% Block)')
 plt.plot(t_p, V_100, color='darkred', linewidth=2.5, label='Complete Knockout (100% Block)')
-plt.title('Figure 3: Pathological Repolarization Prolongation Across Moderate to Complete Blockade', fontsize=10.5, fontweight='bold')
+plt.title('Figure 3: Graded I_Kur Blockade Effects on Atrial Repolarization and Plateau Dome', fontsize=10.5, fontweight='bold')
 plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
 plt.ylim(-95, 50)
@@ -168,35 +168,40 @@ plt.grid(True, linestyle=':', alpha=0.5)
 plt.legend(loc='upper right')
 plt.savefig('Figure_3_Atrial_Severe_Block.png', bbox_inches='tight')
 plt.show()
-# COMPUTE METRICS & HIGH-FREQUENCY ALTERNANS (2.5 Hz)
-def print_metrics(label, t, V):
-    v_rest = round(float(np.mean(V[:int(15.0/0.005)])), 1)
-    idx_p = int(np.argmax(V))
-    apa = round(float(V[idx_p] - v_rest), 1)
-    v50, v90 = V[idx_p] - 0.5*apa, V[idx_p] - 0.9*apa
-    apd50 = round(float(t[idx_p:][np.where(V[idx_p:] <= v50)].item(0) - t[idx_p]), 1)
-    apd90 = round(float(t[idx_p:][np.where(V[idx_p:] <= v90)].item(0) - t[idx_p]), 1)
-    print(f"{label}: Vm={v_rest} mV, APA={apa} mV, APD50={apd50} ms, APD90={apd90} ms")
+def get_metrics(t, V, dt=0.005):
+    mdp = float(np.min(V[:int(20.0 / dt)]))
+    up_end = int(30.0 / dt)
+    idx_p0 = int(np.argmax(V[:up_end]))
+    v_p0 = float(V[idx_p0])
+    apa = v_p0 - mdp
+    v50, v90 = v_p0 - 0.5 * apa, v_p0 - 0.9 * apa
+    apd50 = float(t[idx_p0:][np.where(V[idx_p0:] <= v50)].item(0) - t[idx_p0])
+    apd90 = float(t[idx_p0:][np.where(V[idx_p0:] <= v90)].item(0) - t[idx_p0])
+    return round(mdp, 1), round(apa, 1), round(apd50, 1), round(apd90, 1)
 
 for lbl, v_arr in [("Control", V_ctrl), ("Mild 25%", V_25), ("Moderate 50%", V_50), ("Severe 75%", V_75), ("Knockout 100%", V_100)]:
-    print_metrics(lbl, t_p, v_arr)
+    mdp, apa, apd50, apd90 = get_metrics(t_p, v_arr)
+    print(f"{lbl}: MDP={mdp} mV, APA={apa} mV, APD50={apd50} ms, APD90={apd90} ms")
+    t_hf, V_hf50 = run_crn_plot(0.50, bcl=400.0, n_beats=200, dt=0.005)
+_, V_hf75 = run_crn_plot(0.25, bcl=400.0, n_beats=200, dt=0.005)
+half = int(400.0 / 0.005)
 
-t_hf, V_hf50 = run_crn_plot(0.50, bcl=400.0, n_beats=50, dt=0.005)
-_, V_hf75 = run_crn_plot(0.25, bcl=400.0, n_beats=50, dt=0.005)
+for lbl, v_hf in [("2.5Hz_50%", V_hf50), ("2.5Hz_75%", V_hf75)]:
+    b199 = get_metrics(t_hf[:half], v_hf[:half])
+    b200 = get_metrics(t_hf[half:] - 400.0, v_hf[half:])
+    print(f"{lbl} Beat199 APD90={b199[3]} ms | Beat200 APD90={b200[3]} ms")
 
 plt.figure(figsize=(9, 4.8), dpi=300)
 plt.plot(t_hf, V_hf50, color='darkorange', linestyle='--', linewidth=2.2, label='Moderate Blockade (50% Block) at 2.5 Hz')
 plt.plot(t_hf, V_hf75, color='crimson', linewidth=2.5, label='Severe Blockade (75% Block) at 2.5 Hz')
-plt.title('Figure 4: High-Frequency Pacing (2.5 Hz) Repolarization Instability and Rate Stress', fontsize=10.5, fontweight='bold')
+plt.title('Figure 4: High-Frequency Pacing (2.5 Hz) Repolarization Instability Across Consecutive Beats', fontsize=10.5, fontweight='bold')
 plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
 plt.ylim(-95, 50)
 plt.grid(True, linestyle=':', alpha=0.5)
 plt.legend(loc='upper right')
 plt.savefig('Figure_4_Atrial_Rate_Stress.png', bbox_inches='tight')
-plt.show()
-
-        
+plt.show()    
         
 
 
