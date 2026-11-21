@@ -183,7 +183,7 @@ for lbl, v_arr in [("Control", V_ctrl), ("Mild 25%", V_25), ("Moderate 50%", V_5
     mdp, apa, apd50, apd90 = get_metrics(t_p, v_arr)
     print(f"{lbl}: MDP={mdp} mV, APA={apa} mV, APD50={apd50} ms, APD90={apd90} ms")
     
-    t_hf, V_hf50 = run_crn_plot(0.50, bcl=400.0, n_beats=200, dt=0.005)
+t_hf, V_hf50 = run_crn_plot(0.50, bcl=400.0, n_beats=200, dt=0.005)
 _, V_hf75 = run_crn_plot(0.25, bcl=400.0, n_beats=200, dt=0.005)
 half = int(400.0 / 0.005)
 
