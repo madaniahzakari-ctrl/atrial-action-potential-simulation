@@ -1,4 +1,5 @@
-plt
+import numpy as np
+import matplotlib.pyplot as plt
 
 R, T, F = 8.3143, 310.0, 96.4867
 RTF = (R * T) / F
