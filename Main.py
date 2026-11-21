@@ -11,7 +11,7 @@ Iup_max, Ca_up_max = 0.005, 15.0
 V_cell = 20100.0
 Vi, Vup, Vrel = V_cell * 0.68, 0.0552 * V_cell, 0.0048 * V_cell
 @njit
-def run_crn_plot(gKur_scale=1.0, bcl=1000.0, n_beats=50, dt=0.005):
+def run_crn_plot(gKur_scale=1.0, bcl=1000.0, n_beats=200, dt=0.005):
     steps_per_beat = int(round(bcl / dt))
     n_steps = n_beats * steps_per_beat
     rec_dur = 400.0 if bcl >= 1000.0 else 800.0
