@@ -14,8 +14,9 @@ Vi, Vup, Vrel = V_cell * 0.68, 0.0552 * V_cell, 0.0048 * V_cell
 def run_crn_plot(gKur_scale=1.0, bcl=1000.0, n_beats=50, dt=0.005):
     steps_per_beat = int(round(bcl / dt))
     n_steps = n_beats * steps_per_beat
-    last_beat_step = (n_beats - 1) * steps_per_beat
-    rec_steps = int(round(400.0 / dt))
+    rec_dur = 400.0 if bcl >= 1000.0 else 800.0
+    rec_steps = int(round(rec_dur / dt))
+    last_beat_step = n_steps - rec_steps
     
     V = -81.18
     m, h, j = 0.002908, 0.9649, 0.9775
