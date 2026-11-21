@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from numba import njit
 R, T, F = 8.3143, 310.0, 96.4867
 RTF = (R * T) / F
 Nao, Ko, Cao = 140.0, 5.4, 1.8
@@ -10,7 +10,7 @@ gbNa, gbCa, INaK_max, INaCa_max, IpCa_max = 0.000674, 0.00113, 0.60, 1600.0, 0.2
 Iup_max, Ca_up_max = 0.005, 15.0
 V_cell = 20100.0
 Vi, Vup, Vrel = V_cell * 0.68, 0.0552 * V_cell, 0.0048 * V_cell
-
+@njit
 def run_crn_plot(gKur_scale=1.0, bcl=1000.0, n_beats=50, dt=0.005):
     steps_per_beat = int(round(bcl / dt))
     n_steps = n_beats * steps_per_beat
