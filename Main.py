@@ -131,7 +131,7 @@ print("Min/Max Control V:", round(float(np.min(V_ctrl)), 1), "to", round(float(n
 
 # FIGURE 1
 plt.figure(figsize=(9, 4.8), dpi=300)
-plt.plot(t_p, V_ctrl, color='forestgreen', linewidth=2.5, label='Control (0% Block, 100% G_Kur)')
+plt.plot(t_p, V_ctrl, color='forestgreen', linewidth=2.5, label='Control (0% Block, 100% $G_{Kur}$)')
 plt.title('Figure 1: Baseline Human Atrial Action Potential (CRN Biophysical Model)', fontsize=10.5, fontweight='bold')
 plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
@@ -157,7 +157,7 @@ plt.show()
 # FIGURE 3
 plt.figure(figsize=(9, 4.8), dpi=300)
 plt.plot(t_p, V_ctrl, color='gray', linestyle='--', alpha=0.6, linewidth=1.8, label='Control Reference (0% Block)')
-plt.plot(t_p, V_50, color='darkorange', linestyle='--', linewidth=2.2, label='Moderate Blockade (50% Block / IC50)')
+plt.plot(t_p, V_50, color='darkorange', linestyle='--', linewidth=2.2, label='Moderate Blockade (50% Block / $IC_{50}$)')
 plt.plot(t_p, V_75, color='crimson', linestyle=':', linewidth=2.2, label='Severe Blockade (75% Block)')
 plt.plot(t_p, V_100, color='darkred', linewidth=2.5, label='Complete Knockout (100% Block)')
 plt.title('Figure 3: Graded I_Kur Blockade Effects on Atrial Repolarization and Plateau Dome', fontsize=10.5, fontweight='bold')
